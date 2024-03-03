@@ -1,0 +1,15 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "scripts/db/sql"
+    schema: "scripts/db/migrations"
+    gen:
+      go:
+        package: "store"
+        out: "internal/store"
+        sql_package: "pgx/v5"
+        emit_result_struct_pointers: true
+        emit_params_struct_pointers: true
+        emit_interface: true
+        emit_empty_slices: true
+#        emit_methods_with_db_argument: true

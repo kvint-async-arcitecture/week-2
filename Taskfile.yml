@@ -1,0 +1,117 @@
+# Установка:
+#  mac: brew install go-task/tap/go-task
+#  windows: choco install go-task
+#  linux: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+#  go modules: go install github.com/go-task/task/v3/cmd/task@latest
+
+version: "3"
+
+dotenv: [ '.env', '.env.local' ]
+
+tasks:
+  default:
+    cmd: task verify
+
+  verify:
+    cmds:
+      - task tidy
+      - task generate
+      - task generate:grpc:auth
+
+  tidy:
+    cmd: go mod tidy
+
+  generate:
+    cmd: go generate ./...
+
+  generate:grpc:auth:
+    aliases: [ grpc ]
+    cmd: |
+      protoc --go_out=./auth/pkg \
+        --go-grpc_out=./auth/pkg --go-grpc_opt=require_unimplemented_servers=false \
+        ./auth/api/rpc/*.proto
+
+  # -------------------------------------------------------------------------------------------------
+
+  setup:
+    desc: "Настройка инструментов сборки и тестирования"
+    summary: |
+      Компилятор protoc ставим отсюда https://grpc.io/docs/protoc-installation/
+      Полный мануал https://grpc.io/docs/languages/go/quickstart/
+        - win: choco install protoc
+        - mac: brew install protobuf
+    aliases: [ tools ]
+    cmd: |
+      export GOBIN=$(pwd)/.bin
+      go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
+      go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+      go install github.com/favadi/protoc-go-inject-tag@v1.4.0
+      go install github.com/yoheimuta/protolint/cmd/protolint@v0.46.3
+      go install github.com/nilslice/protolock/cmd/protolock@v0.16.0
+      go install github.com/pressly/goose/v3/cmd/goose@v3.18.0
+      go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.25.0
+      go install github.com/vektra/mockery/v2@v2.40.1
+      go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+
+  generate:sqlc:
+    .bin/sqlc generate
+
+  generate:sqlc:win:
+    docker run --rm -v "%cd%:/src" -w /src sqlc/sqlc generate
+
+  upgrade:
+    cmd: go get -u ./...
+
+  protolock:init:
+    cmd: .bin/protolock init
+
+  build:
+    cmd: |
+      go build \
+      -ldflags="-w -s" \
+      -tags v0.0.0 \
+      -o .bin/app \
+      ./cmd/app
+
+  new_migration:
+    .bin/goose -dir scripts/db/migrations -s create SOME-NAME sql
+
+  ### docker ### ------------------------------------------------------------------------------------
+
+  db:
+    cmd: |
+      docker build -t ${REGISTRY_NAME}/${APP_NAME}:debug-latest \
+      --secret id=gitlab_token,env=GITLAB_TOKEN \
+      --label org.opencontainers.image.created="$(date --utc)" \
+      --label org.opencontainers.image.revision="$(git rev-parse HEAD)" \
+      --label org.opencontainers.image.source="$(git remote get-url origin)" \
+      --label org.opencontainers.image.title="${APP_NAME}" \
+      --progress=plain .
+
+  de:
+    cmd: |
+      docker compose up -d \
+        auth_db
+#        zookeeper \
+#        schema-registry \
+#        kafka \
+#        kafka-topics-generator \
+#        kafka-ui \
+#        kafka-rest #auth_db jaeger
+
+  du:
+    cmd: docker compose up -d
+
+  dpu:
+    cmd: docker compose pull && docker compose up -d
+
+  dd:
+    cmd: docker compose down
+
+  ### git ### ---------------------------------------------------------------------------------------
+
+  gu:
+    cmd: |
+      git checkout main
+      git fetch origin
+      git merge origin/main --ff-only

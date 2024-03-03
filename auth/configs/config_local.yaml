@@ -1,0 +1,6 @@
+grpc:
+  port: 10001
+
+authDb:
+  poolMaxConnections: 5
+  healthCheckPeriod: 5s
