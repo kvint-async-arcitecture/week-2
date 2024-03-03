@@ -21,6 +21,7 @@ func (h *AuthGRPCHandler) Register(ctx context.Context, req *rpc.RegisterRequest
 	in := &model.RegisterIn{
 		Email:    req.GetEmail(),
 		Password: req.GetPassword(),
+		Role:     req.GetRole().String(),
 	}
 
 	resp, err := h.authSvc.Register(ctx, in)

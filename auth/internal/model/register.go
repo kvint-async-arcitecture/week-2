@@ -8,12 +8,14 @@ import (
 type RegisterIn struct {
 	Email    string `validate:"required,email"`
 	Password string `validate:"required,password"`
+	Role     string `validate:"required"`
 }
 
 func (in RegisterIn) Validate() error {
 	err := validation.ValidateStruct(&in,
 		validation.Field(&in.Email, validation.Required, validation.Length(EmailMinLength, EmailMaxLength), is.Email),
 		validation.Field(&in.Password, validation.Required, validation.Length(PasswordMinLength, PasswordMaxLength)),
+		validation.Field(&in.Role, validation.Required),
 	)
 	if err != nil {
 		return err // fmt.Errorf("validation error: %w", err)

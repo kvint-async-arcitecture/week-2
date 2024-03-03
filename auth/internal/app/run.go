@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/go-ledger/common/migration"
-
 	"auth/internal/config"
 	"auth/internal/handler"
 	"auth/internal/log"
+	"auth/internal/migration"
 	"auth/internal/service"
 	"auth/internal/store"
 )

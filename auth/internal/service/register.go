@@ -25,6 +25,7 @@ func (svc *AuthService) Register(ctx context.Context, in *model.RegisterIn) (*mo
 	userUID, err := svc.st.InsertUser(ctx, &store.InsertUserParams{
 		Email:    in.Email,
 		Password: hashedPassword,
+		Role:     in.Role,
 	})
 	if err != nil {
 		var pgerr *pgconn.PgError
