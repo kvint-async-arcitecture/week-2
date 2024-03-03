@@ -40,7 +40,7 @@ func (svc *AuthService) Login(ctx context.Context, in *model.LoginIn) (*model.Lo
 		return nil, ErrPasswordMismatch.Wrap(err)
 	}
 
-	token, err := generateToken(in.Email)
+	token, err := generateToken(in.Email, user.Role)
 	if err != nil {
 		return nil, ErrToken.Wrap(err)
 	}
@@ -48,7 +48,7 @@ func (svc *AuthService) Login(ctx context.Context, in *model.LoginIn) (*model.Lo
 	return &model.LoginOut{Token: token}, nil
 }
 
-func generateToken(email string) (string, error) {
+func generateToken(email, role string) (string, error) {
 	createdAt := time.Now()
 
 	tokenID, err := uuid.NewUUID()
@@ -67,6 +67,7 @@ func generateToken(email string) (string, error) {
 			IssuedAt:  jwt.NewNumericDate(createdAt),
 		},
 		Email: email,
+		Role:  role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodEdDSA, claims)
@@ -87,4 +88,5 @@ func generateToken(email string) (string, error) {
 type UserClaims struct {
 	jwt.RegisteredClaims
 	Email string `json:"email"`
+	Role  string `json:"role"`
 }
