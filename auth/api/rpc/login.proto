@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "/rpc";
+
+message LoginRequest{
+  string email = 1; // @gotags: mask:"email"
+  string password = 2; // @gotags: mask:"password"
+}
+
+message LoginResponse{
+  string token = 1;
+}

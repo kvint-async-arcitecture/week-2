@@ -13,4 +13,9 @@ var (
 
 	ErrPassword = errors.InternalError("errPassword", errors.WithGRPCCode(codes.Internal))
 	ErrDB       = errors.InternalError("errDB", errors.WithGRPCCode(codes.Internal))
+
+	ErrPasswordMismatch = errors.UserError("errPasswordMismatch",
+		errors.WithTemplate("email not exists or password mismatch"),
+		errors.WithGRPCCode(codes.InvalidArgument))
+	ErrToken = errors.InternalError("errToken", errors.WithGRPCCode(codes.Internal))
 )

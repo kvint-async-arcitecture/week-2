@@ -31,3 +31,17 @@ func (h *AuthGRPCHandler) Register(ctx context.Context, req *rpc.RegisterRequest
 
 	return &rpc.RegisterResponse{UserUid: resp.UID}, nil
 }
+
+func (h *AuthGRPCHandler) Login(ctx context.Context, req *rpc.LoginRequest) (*rpc.LoginResponse, error) {
+	in := &model.LoginIn{
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
+	}
+
+	resp, err := h.authSvc.Login(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rpc.LoginResponse{Token: resp.Token}, nil
+}

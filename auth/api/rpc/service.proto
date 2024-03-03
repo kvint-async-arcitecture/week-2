@@ -3,9 +3,11 @@ syntax = "proto3";
 package rpc;
 
 import "auth/api/rpc/register.proto";
+import "auth/api/rpc/login.proto";
 
 option go_package = "/rpc";
 
 service AuthService {
+  rpc Login (LoginRequest) returns (LoginResponse) {}
   rpc Register (RegisterRequest) returns (RegisterResponse) {}
 }

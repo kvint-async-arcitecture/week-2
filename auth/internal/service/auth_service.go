@@ -18,5 +18,6 @@ func NewAuthService(st store.Querier) *AuthService {
 }
 
 type AuthServiceAPI interface {
+	Login(ctx context.Context, in *model.LoginIn) (*model.LoginOut, error)
 	Register(ctx context.Context, in *model.RegisterIn) (*model.RegisterOut, error)
 }

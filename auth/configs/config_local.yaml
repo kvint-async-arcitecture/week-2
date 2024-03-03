@@ -4,3 +4,6 @@ grpc:
 authDb:
   poolMaxConnections: 5
   healthCheckPeriod: 5s
+
+credentials:
+  expiresTimeout: 1h

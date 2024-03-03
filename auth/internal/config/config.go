@@ -23,9 +23,10 @@ var (
 )
 
 type Config struct {
-	Common CommonConfig `yaml:"common"`
-	GRPC   GRPCConfig   `yaml:"grpc"`
-	AuthDB AuthDB       `yaml:"authDb"`
+	Common      CommonConfig `yaml:"common"`
+	GRPC        GRPCConfig   `yaml:"grpc"`
+	AuthDB      AuthDB       `yaml:"authDb"`
+	Credentials Credentials  `yaml:"credentials"`
 }
 
 func LoadConfig() error {
@@ -90,4 +91,9 @@ type AuthDB struct {
 	MigrationURL       string        `env:"AUTH_DB_MIGRATION_URL" env-required:"true"`
 	PoolMaxConnections int32         `env-required:"true"         yaml:"poolMaxConnections"`
 	HealthCheckPeriod  time.Duration `env-required:"true"         yaml:"healthCheckPeriod"`
+}
+
+type Credentials struct {
+	Token          string        `env:"CREDENTIALS_TOKEN" env-required:"true"`
+	ExpiresTimeout time.Duration `yaml:"expiresTimeout"`
 }
